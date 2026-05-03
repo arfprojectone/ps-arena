@@ -17,7 +17,10 @@ export default function Navbar() {
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
   };
 
@@ -32,19 +35,13 @@ export default function Navbar() {
           }
         });
       },
-      {
-        threshold: 0.6, // makin besar = makin akurat
-      }
+      { threshold: 0.6 }
     );
 
-    sections.forEach((section) => {
-      if (section) observer.observe(section);
-    });
+    sections.forEach((sec) => sec && observer.observe(sec));
 
     return () => {
-      sections.forEach((section) => {
-        if (section) observer.unobserve(section);
-      });
+      sections.forEach((sec) => sec && observer.unobserve(sec));
     };
   }, []);
 
@@ -52,29 +49,37 @@ export default function Navbar() {
     <motion.nav
       initial={{ y: -40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="flex justify-between items-center px-8 py-4 
+      className="fixed top-0 w-full flex justify-between items-center px-6 md:px-8 py-4 
       border-b border-green-500/20 
       bg-black/40 backdrop-blur-xl 
-      sticky top-0 z-50"
+      z-50"
     >
       <h1 className="text-2xl font-bold text-green-400 tracking-widest 
       drop-shadow-[0_0_10px_#22c55e]">
         PS ARENA
       </h1>
 
-      <div className="space-x-6 text-sm text-gray-300">
+      <div className="flex space-x-6 text-sm text-gray-300">
         {menus.map((menu) => (
-          <span
-            key={menu.name}
-            onClick={() => scrollToSection(menu.target)}
-            className={`cursor-pointer transition ${
-              active === menu.target
-                ? "text-green-400 drop-shadow-[0_0_10px_#22c55e]"
-                : "hover:text-green-400"
-            }`}
-          >
-            {menu.name}
-          </span>
+          <div key={menu.name} className="relative">
+            <span
+              onClick={() => scrollToSection(menu.target)}
+              className={`cursor-pointer transition ${
+                active === menu.target
+                  ? "text-green-400"
+                  : "hover:text-green-400"
+              }`}
+            >
+              {menu.name}
+            </span>
+
+            {active === menu.target && (
+              <motion.div
+                layoutId="underline"
+                className="h-[2px] bg-green-400 mt-1"
+              />
+            )}
+          </div>
         ))}
       </div>
     </motion.nav>
